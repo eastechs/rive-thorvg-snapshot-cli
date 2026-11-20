@@ -1,0 +1,17 @@
+cmake_minimum_required(VERSION 3.20)
+project(riv_render LANGUAGES C CXX)
+if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/deps/rive-framebuffer/CMakeLists.txt")
+    message(FATAL_ERROR "Run git submodule update --init --recursive from the riv-render checkout.")
+endif()
+add_subdirectory(deps/rive-framebuffer)
+add_executable(riv-render src/render.cpp)
+target_compile_features(riv-render PRIVATE cxx_std_17)
+target_link_libraries(riv-render PRIVATE rive_thorvg)
+install(TARGETS riv-render RUNTIME DESTINATION bin)
+
+include(CTest)
+if(BUILD_TESTING)
+    find_package(Python3 REQUIRED COMPONENTS Interpreter)
+    add_test(NAME render COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/tests/render.py"
+        $<TARGET_FILE:riv-render> "${CMAKE_CURRENT_SOURCE_DIR}/deps/rive-framebuffer/vendor/rive-thorvg/assets/loader.riv")
+endif()

@@ -1,0 +1,3 @@
+[submodule "deps/rive-framebuffer"]
+	path = deps/rive-framebuffer
+	url = ../rive-framebuffer
